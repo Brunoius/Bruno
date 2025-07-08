@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bruno</title>
+  <link rel="icon" href="Flecha.png" type="image/png">
+  <style>
+    :root {
+      --bg-dark: #121212;
+      --text-light: #ffffff;
+      --accent: #1f1f1f;
+      --gray: #2a2a2a;
+      --highlight: #d4af37;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    ::selection {
+      background-color: var(--highlight);
+      color: #000;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+    }
+
+    header {
+      position: relative;
+      height: 100vh;
+      background-image: url('Auto.jpg');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 0;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 1;
+      color: var(--text-light);
+    }
+
+    .header-content h1 {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .header-content p {
+      font-size: 1.3rem;
+      font-style: italic;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    section.horario, section.nutricion {
+      padding: 3rem 2rem;
+      background-color: var(--accent);
+    }
+
+    section.horario h2, section.nutricion h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .tabla-horario {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      width: 100%;
+      max-width: 1600px;
+      margin: auto;
+      gap: 1px;
+      background-color: var(--gray);
+      border: 1px solid #333;
+    }
+
+    .tabla-horario div {
+      padding: 1.2rem;
+      background-color: #1a1a1a;
+      border: 1px solid #222;
+      font-size: 1.05rem;
+    }
+
+    .hora {
+      font-weight: bold;
+      background-color: #101010;
+      text-align: center;
+    }
+
+    section#video-dia {
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    section#video-dia iframe {
+      width: 90%;
+      max-width: 800px;
+      height: 400px;
+      border: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: var(--accent);
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+
+    .plan-dia {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: #181818;
+      border-left: 5px solid var(--highlight);
+    }
+    .plan-dia h3 {
+      color: var(--highlight);
+      margin-bottom: 1rem;
+    }
+    .plan-dia ul {
+      padding-left: 1.2rem;
+      line-height: 1.6rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Bruno</h1>
+      <p id="frase"></p>
+    </div>
+  </header>
+
+  <section class="horario">
+    <h2 id="titulo-dia">Horario del Día</h2>
+    <div class="tabla-horario" id="tabla-horario"></div>
+  </section>
+
+  <section id="video-dia"></section>
+
+  <section class="nutricion">
+    <h2>Plan de Alimentación </h2>
+    <div id="plan-alimentacion"></div>
+  </section>
+
+  <footer>
+    &copy; 2025 Bruno. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    const frases = [
+      "No soy un perfeccionista, pero me gusta que las cosas se hagan bien.",
+      "Tu amor me hace fuerte. Tu odio me hace imparable.",
+      "El talento sin trabajo no sirve de nada.",
+      "Si piensas que ya eres perfecto, nunca lo serás.",
+      "Dedícate a ser el mejor, eso silenciará a todos.",
+      "No hay éxito sin sacrificio.",
+      "Soñar es gratis, luchar por el sueño tiene un precio."
+    ];
+
+    const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+    const videosEducativos = {
+      "Lunes": "https://www.youtube.com/embed/f9FghN_hMGM",
+      "Martes": "https://www.youtube.com/embed/71D1wFZZmQ4",
+      "Miércoles": "https://www.youtube.com/embed/pVI0ZrXiYQk",
+      "Jueves": "https://www.youtube.com/embed/xjIvJjfwTGw",
+      "Viernes": "https://www.youtube.com/embed/9TSdVPZIRN8"
+    };
+
+    const horarios = {
+      "Lunes": [
+        ["5:00 AM", "Agua, café y creatina"],
+        ["5:30 AM", "Ejercicio físico intenso"],
+        ["6:30 AM", "Ducha fría"],
+        ["6:50 AM", "Lectura de libro de marketing"],
+        ["7:30 AM", "Desayuno nutritivo"],
+        ["8:00 AM", "Prepararse: baño y cambio de ropa"],
+        ["8:30 AM", "Trabajo en Prime League"],
+        ["10:30 AM", "Pausa activa y estiramientos"],
+        ["11:00 AM", "Continuación del trabajo en proyectos"],
+        ["12:00 PM", "Almuerzo"],
+        ["12:40 PM", "Descanso corto o caminata"],
+        ["1:00 PM", "Estudio autodidacta o cursos online"],
+        ["3:00 PM", "Segundo bloque de trabajo en proyectos"],
+        ["5:00 PM", "Ejercicio ligero (cardio/estiramientos)"],
+        ["6:00 PM", "Ducha y descanso breve"],
+        ["6:30 PM", "Cena ligera"],
+        ["7:00 PM", "Videos de educación financiera"],
+        ["8:00 PM", "Tiempo libre productivo (lectura, journaling)"],
+        ["9:00 PM", "Planificación del día siguiente"],
+        ["10:00 PM", "Desconexión / reflexión personal"],
+        ["11:00 PM", "Prepararse para dormir"],
+        ["12:00 AM", "Dormir"]
+      ],
+      "Martes": ["Lunes"],
+      "Miércoles": ["Lunes"],
+      "Jueves": ["Lunes"],
+      "Viernes": ["Lunes"],
+      "Sábado": [
+   ["5:00 AM", "Dormir / descanso"],
+        ["8:00 AM", "Despertar y desayuno ligero"],
+        ["9:00 AM", "Lectura, journaling o videos"],
+        ["11:00 AM", "Prepararse para el trabajo"],
+        ["12:00 PM", "Trabajo (hasta medianoche)"],
+        ["12:00 AM", "Lavar ropa"],
+        ["12:40 AM", "Cena"],
+        ["1:00 AM", "Ducha y cambio de ropa"],
+        ["1:30 AM", "Actividad ligera / descanso"],
+        ["2:00 AM", "Dormir"]
+      ],
+      "Domingo": ["Sábado"]
+    };
+
+    const alimentacion = {
+      "Lunes": [
+        "Batido de proteína con plátano, avena y leche (después de entrenar)",
+        "Huevos revueltos con pan integral + fruta",
+        "Arroz con pollo y ensalada + fruta",
+        "Yogurt griego + nueces",
+        "camote cocido + atún + verduras"
+      ],
+      "Martes": [
+        "Smoothie de proteína + mantequilla de maní",
+        "Avena cocida con semillas de chía + huevo cocido",
+        "Lentejas con arroz y carne + ensalada",
+        "Leche con galletas integrales",
+        "Puré de papa + filete de pescado"
+      ],
+      "Miércoles": [
+        "Café + creatina + banana",
+        "Pan con palta + 2 huevos duros",
+        "Fideos integrales con carne molida + verduras",
+        "Frutos secos + jugo natural",
+        "Arroz con huevo + vegetales salteados"
+      ],
+      "Jueves": [
+        "Proteína en agua + manzana",
+        "Arepa con queso + avena",
+        "Arroz integral + pollo a la plancha + ensalada",
+        "Batido de yogurt + avena",
+        "Sopa de verduras + pan + huevo"
+      ],
+      "Viernes": [
+        "Pan integral con atún + café",
+        "Tortilla de espinaca + papaya",
+        "Guiso de lentejas + arroz + plátano maduro",
+        "Barra de proteína o yogurt",
+        "Pasta con atún y verduras"
+      ],
+      "Sábado": [
+        "Avena + frutas + leche",
+        "Huevos duros + tostadas",
+        "Arroz + carne + ensalada",
+        "Batido de banana + maní",
+        "Cena ligera post trabajo: sopa + pan + leche"
+      ],
+      "Domingo": [
+        "Panqueques de avena + fruta",
+        "Tostadas con huevo",
+        "Arroz con pollo",
+        "Frutos secos + infusión",
+        "Cena: pescado + verduras cocidas"
+      ]
+    };
+
+    const hoy = new Date();
+    const diaActual = hoy.getDay();
+    const nombreDia = diasSemana[diaActual];
+
+    document.getElementById("frase").textContent = `"${frases[diaActual]}"  Cristiano Ronaldo`;
+    document.getElementById("titulo-dia").textContent = `Horario Dia ${nombreDia}`;
+
+    function obtenerHorario(dia) {
+      const ref = horarios[dia];
+      if (Array.isArray(ref) && typeof ref[0] === "string") {
+        return horarios[ref[0]];
+      }
+      return ref;
+    }
+
+    const horarioHoy = obtenerHorario(nombreDia) || [];
+    const contenedor = document.getElementById("tabla-horario");
+    horarioHoy.forEach(([hora, actividad]) => {
+      const horaDiv = document.createElement("div");
+      horaDiv.className = "hora";
+      horaDiv.textContent = hora;
+
+      const actividadDiv = document.createElement("div");
+      actividadDiv.textContent = actividad;
+
+      contenedor.appendChild(horaDiv);
+      contenedor.appendChild(actividadDiv);
+    });
+
+    const alimentosHoy = alimentacion[nombreDia] || [];
+    const planDiv = document.getElementById("plan-alimentacion");
+    if (alimentosHoy.length) {
+      const bloque = document.createElement("div");
+      bloque.className = "plan-dia";
+      bloque.innerHTML = `<h3>Alimentación del ${nombreDia}</h3><ul>${alimentosHoy.map(item => `<li>${item}</li>`).join('')}</ul>`;
+      planDiv.appendChild(bloque);
+    }
+  </script>
+</body>
+</html>
